@@ -164,5 +164,4 @@ public class Tile extends JButton {
 			}
 		}
 	}
-
 }

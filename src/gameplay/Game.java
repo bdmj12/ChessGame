@@ -12,6 +12,8 @@ import pieces.Rook;
 public class Game {
 
 	Board board;
+	King wKing;
+	King bKing;
 
 	public void buildGame() {
 
@@ -21,15 +23,16 @@ public class Game {
 
 		// kings and queens
 
-		King bKing = new King(Alliance.BLACK, board, 4);
-		King wKing = new King(Alliance.WHITE, board, 60);
+		bKing = new King(Alliance.BLACK, board, 4);
+		wKing = new King(Alliance.WHITE, board, 60);
+
+		board.setKings(wKing, bKing);
 
 		board.getChessboard().get(4).setPiece(bKing);
 		board.getChessboard().get(3).setPiece(new Queen(Alliance.BLACK, board, 3, bKing));
 
 		board.getChessboard().get(60).setPiece(wKing);
 		board.getChessboard().get(59).setPiece(new Queen(Alliance.WHITE, board, 59, wKing));
-
 		// pawns
 		for (int i = 0; i < 8; i++) {
 			board.getChessboard().get(i + 8).setPiece(new Pawn(Alliance.BLACK, board, i + 8, bKing));

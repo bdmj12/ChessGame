@@ -17,35 +17,24 @@ public class King extends Piece {
 		// TODO Auto-generated constructor stub
 	}
 
-	// public boolean inCheck(int pos) {
-	// int loc = this.getPosition();
-	// this.setPosition(100);
-	//
-	// getBoard().getChessboard().get(loc).clearPiece();
-	//
-	// for (int i = 0; i < 64; i++) {
-	// if (this.getBoard().isPieceAt(i) && this.getBoard().getAllianceAt(i) !=
-	// this.getAlliance()
-	// && this.getBoard().getPieceAt(i) != this) {
-	// if (this.getBoard().getPieceAt(i).calculateLegalMoves().contains(pos)) {
-	// this.setPosition(loc);
-	// getBoard().getChessboard().get(loc).setPiece(this);
-	// return true;
-	//
-	// }
-	// }
-	// }
-	// getBoard().getChessboard().get(loc).setPiece(this);
-	// this.setPosition(loc);
-	// return false;
-	// }
+	public boolean inCheck() {
+		isKingInCheckRunning = true;
+		int pos = this.getPosition();
 
-	@Override
-	public void addMove(int x, ArrayList<Integer> moves) {
-		if (!isKingInCheck(this.getBoard(), x)
-				&& (!this.getBoard().isPieceAt(x) || this.getBoard().getAllianceAt(x) != this.getAlliance())) {
-			moves.add(x);
+		for (int i = 0; i < 64; i++) {
+			if (this.getBoard().isPieceAt(i) && this.getBoard().getAllianceAt(i) != this.getAlliance()
+					&& this.getBoard().getPieceAt(i) != this) {
+				if (this.getBoard().getPieceAt(i).calculateLegalMoves().contains(pos)) {
+
+					isKingInCheckRunning = false;
+					return true;
+
+				}
+			}
 		}
+		isKingInCheckRunning = false;
+
+		return false;
 	}
 
 	@Override

@@ -10,13 +10,13 @@ public abstract class Piece {
 
 	protected King myKing;
 
+	static boolean isKingInCheckRunning = false;
+
 	private Alliance alliance;
 
 	private int position;
 
 	private Type type;
-
-	private boolean bool = true;
 
 	public Piece(Alliance alliance, Board board, int position, King king) {
 		this.alliance = alliance;
@@ -35,59 +35,52 @@ public abstract class Piece {
 		this.position = newPos;
 	}
 
-	public boolean isKingInCheck(Board board, int x) {
-		// if (bool == true) {
-		// if (getBoard().isPieceAt(x)) {
-		// // System.out.println(this.getBoard().getPieceAt(x).getPosition());
-		// }
-		// Piece piece = null;
-		// int loc = this.getPosition();
-		// if (this.getBoard().isPieceAt(x)) {
-		// piece = getBoard().getPieceAt(x);
-		// }
-		//
-		// // move piece to proposed position
-		// this.setPosition(x);
-		// getBoard().getChessboard().get(x).setPiece(this);
-		// getBoard().getChessboard().get(loc).clearPiece();
-		//
-		// // for every enemy piece
-		// for (int i = 0; i < 64; i++) {
-		// if (this.getBoard().isPieceAt(i) && this.getBoard().getAllianceAt(i) !=
-		// this.getAlliance()) {
-		// // if they could take the King
-		// if
-		// (this.getBoard().getPieceAt(i).calculateLegalMoves().contains(myKing.getPosition()))
-		// {
-		//
-		// // change the piece back
-		// this.setPosition(loc);
-		// getBoard().getChessboard().get(loc).setPiece(this);
-		// getBoard().getChessboard().get(x).clearPiece();
-		// if (piece != null) {
-		// getBoard().getChessboard().get(x).setPiece(piece);
-		// }
-		// bool = !bool;
-		// return true;
-		//
-		// }
-		// }
-		//
-		// }
-		// // change the piece back
-		// this.setPosition(loc);
-		//
-		// getBoard().getChessboard().get(loc).setPiece(this);
-		// getBoard().getChessboard().get(x).clearPiece();
-		// if (piece != null) {
-		// getBoard().getChessboard().get(x).setPiece(piece);
-		// }
-		// bool = !bool;
-		// return false;
-		// }
-		// bool = !bool;
-		return false;
+	public boolean isKingInCheck(Board board, int proposedMove) {
+		isKingInCheckRunning = true;
 
+		Piece piece = null;
+		int loc = this.getPosition();
+		if (this.getBoard().isPieceAt(proposedMove)) {
+			piece = getBoard().getPieceAt(proposedMove);
+		}
+
+		// move piece to proposed position
+		this.setPosition(proposedMove);
+		getBoard().getChessboard().get(proposedMove).setPiece(this);
+		getBoard().getChessboard().get(loc).clearPiece();
+
+		// for every enemy piece
+		for (int i = 0; i < 64; i++) {
+			if (this.getBoard().isPieceAt(i) && this.getBoard().getAllianceAt(i) != this.getAlliance()) {
+				// if they could take the King
+				if (this.getBoard().getPieceAt(i).calculateLegalMoves().contains(myKing.getPosition())) {
+
+					// change the piece back
+					this.setPosition(loc);
+					getBoard().getChessboard().get(loc).setPiece(this);
+					getBoard().getChessboard().get(proposedMove).clearPiece();
+					if (piece != null) {
+						getBoard().getChessboard().get(proposedMove).setPiece(piece);
+					}
+					isKingInCheckRunning = false;
+
+					return true;
+
+				}
+			}
+
+		}
+
+		// change the piece back
+		this.setPosition(loc);
+
+		getBoard().getChessboard().get(loc).setPiece(this);
+		getBoard().getChessboard().get(proposedMove).clearPiece();
+		if (piece != null) {
+			getBoard().getChessboard().get(proposedMove).setPiece(piece);
+		}
+		isKingInCheckRunning = false;
+		return false;
 	}
 
 	public int getPosition() {
@@ -108,11 +101,18 @@ public abstract class Piece {
 		return type;
 	}
 
+	public King getMyKing() {
+		return myKing;
+	}
+
 	public void addMove(int x, ArrayList<Integer> moves) {
-		if (!isKingInCheck(this.getBoard(), x)
-				&& (!this.getBoard().isPieceAt(x) || this.getBoard().getAllianceAt(x) != this.getAlliance())) {
+		if (!isKingInCheckRunning) {
+			if (!isKingInCheck(this.getBoard(), x)
+					&& (!this.getBoard().isPieceAt(x) || this.getBoard().getAllianceAt(x) != this.getAlliance())) {
+				moves.add(x);
+			}
+		} else if (!this.getBoard().isPieceAt(x) || this.getBoard().getAllianceAt(x) != this.getAlliance()) {
 			moves.add(x);
 		}
 	}
-
 }
