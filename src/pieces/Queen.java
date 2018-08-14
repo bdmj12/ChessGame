@@ -3,122 +3,48 @@ package pieces;
 import java.util.ArrayList;
 
 import gui.Board;
+import gui.Tile;
 
 public class Queen extends Piece {
 
-	private Type type;
+	public Queen(Alliance alliance, Board board, int row, int col) {
+		super(alliance, board, row, col);
 
-	public Queen(Alliance alliance, Board board, int position, King king) {
-		super(alliance, board, position, king);
-
-		this.type = Type.QUEEN;
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public ArrayList<Integer> calculateLegalMoves() {
+	public ArrayList<Tile> calculateLegalMoves() {
+		moves = new ArrayList<>();
 
-		ArrayList<Integer> moves = new ArrayList<>();
-		int pos = this.getPosition();
+		for (int i : new int[] { 1, -1 }) {
+			for (int j : new int[] { 1, -1 }) {
+				for (int k = 1; k < board.BOARD_SIZE; k++)
+					if (withinRange(row + i * k, col + j * k)) {
 
-		// checks the options to the right upper
-		for (int i = pos - 7; !(i < 0) && i % 8 != 0; i -= 7) {
-			if (!this.getBoard().isPieceAt(i)) {
-				addMove(i, moves);
-			} else if (this.getBoard().getAllianceAt(i) != this.getAlliance()) {
-				addMove(i, moves);
-				break;
-			} else {
-				break;
+						if (!isPieceAt(row + i * k, col + j * k)) {
+							addMove(row + i * k, col + j * k);
+						} else if (getAllianceAt(row + i * k, col + j * k) != alliance) {
+							addMove(row + i * k, col + j * k);
+							break;
+						} else {
+							break;
+						}
+
+					}
 			}
 
 		}
 
-		// checks options to the bottom left
-		for (int i = pos + 7; !(i > 63) && i % 8 != 7; i += 7) {
-			if (!this.getBoard().isPieceAt(i)) {
-				addMove(i, moves);
-			} else if (this.getBoard().getAllianceAt(i) != this.getAlliance()) {
-				addMove(i, moves);
-				break;
-			} else {
-				break;
-			}
-		}
+		for (int i : new int[] { 1, -1 }) {
 
-		// checks options left upper
-		for (int i = pos - 9; !(i < 0) && i % 8 != 7; i -= 9) {
-			if (!this.getBoard().isPieceAt(i)) {
-				addMove(i, moves);
-			} else if (this.getBoard().getAllianceAt(i) != this.getAlliance()) {
-				addMove(i, moves);
-				break;
-			} else {
-				break;
-			}
-		}
+			// rows
+			rookMoves(i, 0);
 
-		// checks options right below
-		for (int i = pos + 9; !(i > 63) && i % 8 != 0; i += 9) {
-			if (!this.getBoard().isPieceAt(i)) {
-				addMove(i, moves);
-			} else if (this.getBoard().getAllianceAt(i) != this.getAlliance()) {
-				addMove(i, moves);
-				break;
-			} else {
-				break;
-			}
-		}
+			// columns
 
-		// checks the options to the right
-		for (int i = pos + 1; i % 8 != 0 && pos % 8 != 7; i++) {
-			if (!this.getBoard().isPieceAt(i)) {
-				addMove(i, moves);
-			} else if (this.getBoard().getAllianceAt(i) != this.getAlliance()) {
-				addMove(i, moves);
-				break;
-			} else {
-				break;
-			}
+			rookMoves(0, i);
 
 		}
-
-		// checks options to the left
-		for (int i = pos - 1; i % 8 != 7 && pos % 8 != 0; i--) {
-			if (!this.getBoard().isPieceAt(i)) {
-				addMove(i, moves);
-			} else if (this.getBoard().getAllianceAt(i) != this.getAlliance()) {
-				addMove(i, moves);
-				break;
-			} else {
-				break;
-			}
-		}
-
-		// checks options above
-		for (int i = pos - 8; i > 0; i -= 8) {
-			if (!this.getBoard().isPieceAt(i)) {
-				addMove(i, moves);
-			} else if (this.getBoard().getAllianceAt(i) != this.getAlliance()) {
-				addMove(i, moves);
-				break;
-			} else {
-				break;
-			}
-		}
-
-		// checks options below
-		for (int i = pos + 8; i < 64; i += 8) {
-			if (!this.getBoard().isPieceAt(i)) {
-				addMove(i, moves);
-			} else if (this.getBoard().getAllianceAt(i) != this.getAlliance()) {
-				addMove(i, moves);
-				break;
-			} else {
-				break;
-			}
-		}
-
 		return moves;
 	}
 

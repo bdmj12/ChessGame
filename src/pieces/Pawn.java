@@ -3,61 +3,51 @@ package pieces;
 import java.util.ArrayList;
 
 import gui.Board;
+import gui.Tile;
 
 public class Pawn extends Piece {
 
-	private Type type;
+	public Pawn(Alliance alliance, Board board, int row, int col) {
+		super(alliance, board, row, col);
 
-	public Pawn(Alliance alliance, Board board, int position, King king) {
-		super(alliance, board, position, king);
-		this.type = Type.PAWN;
-		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public ArrayList<Integer> calculateLegalMoves() {
-		ArrayList<Integer> moves = new ArrayList<>();
-		int pos = this.getPosition();
-		if (this.getAlliance() == Alliance.BLACK) {
+	public ArrayList<Tile> calculateLegalMoves() {
+		moves = new ArrayList<>();
 
-			if (pos + 8 < 63) {
-				if (!this.getBoard().isPieceAt(pos + 8)) {
-					addMove(pos + 8, moves);
-				}
+		if (this.alliance == Alliance.WHITE) {
+			if (withinRange(row - 1, col) && !isPieceAt(row - 1, col)) {
+				addMove(row - 1, col);
 			}
-			if (pos > 7 && pos < 16) {
-				if (!this.getBoard().isPieceAt(pos + 16)) {
-					addMove(pos + 16, moves);
-				}
-			}
-			// capturing
-			for (int i = -1; i < 2; i++) {
-				if (i != 0 && this.getBoard().isPieceAt(pos + 8 + i)
-						&& this.getBoard().getAllianceAt(pos + 8 + i) != this.getAlliance()) {
-					addMove(pos + 8 + i, moves);
-				}
+			if (row == 6 && !isPieceAt(row - 2, col)) {
+				addMove(row - 2, col);
 			}
 
-		} else {
-			if (pos - 8 >= 0) {
-				if (!this.getBoard().isPieceAt(pos - 8)) {
-					addMove(pos - 8, moves);
+			for (int i : new int[] { -1, 1 }) {
+				if (withinRange(row - 1, col + i) && isPieceAt(row - 1, col + i)
+						&& getAllianceAt(row - 1, col + i) != this.alliance) {
+					addMove(row - 1, col + i);
 				}
 			}
-			if (pos < 56 && pos > 47) {
-				if (!this.getBoard().isPieceAt(pos - 16)) {
-					addMove(pos - 16, moves);
-				}
+		}
+
+		else {
+			if (withinRange(row + 1, col) && !isPieceAt(row + 1, col)) {
+				addMove(row + 1, col);
 			}
-			// capturing
-			for (int i = -1; i < 2; i++) {
-				if (i != 0 && this.getBoard().isPieceAt(pos - 8 + i)
-						&& this.getBoard().getAllianceAt(pos - 8 + i) != this.getAlliance()) {
-					addMove(pos - 8 + i, moves);
+			if (row == 1 && !isPieceAt(row + 2, col)) {
+				addMove(row + 2, col);
+			}
+
+			for (int i : new int[] { -1, 1 }) {
+				if (withinRange(row + 1, col + i) && isPieceAt(row + 1, col + i)
+						&& getAllianceAt(row + 1, col + i) != this.alliance) {
+					addMove(row + 1, col + i);
 				}
 			}
 		}
 
 		return moves;
+
 	}
 }

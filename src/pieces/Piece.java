@@ -2,117 +2,188 @@ package pieces;
 
 import java.util.ArrayList;
 
+import gameplay.Player;
 import gui.Board;
+import gui.Tile;
 
 public abstract class Piece {
 
-	private Board board;
+	protected Alliance alliance;
+	protected int row;
+	protected int col;
+	protected Board board;
+	protected ArrayList<Tile> moves;
+	public static boolean isKingInCheckRunning = false;
+	protected Player myPlayer;
+	protected Player enemyPlayer;
 
-	protected King myKing;
+	public Player getMyPlayer() {
+		return myPlayer;
+	}
 
-	static boolean isKingInCheckRunning = false;
+	public void setMyPlayer(Player myPlayer) {
 
-	private Alliance alliance;
+		this.myPlayer = myPlayer;
+	}
 
-	private int position;
+	public Player getEnemyPlayer() {
+		return enemyPlayer;
+	}
 
-	private Type type;
+	public void setEnemyPlayer(Player enemyPlayer) {
+		this.enemyPlayer = enemyPlayer;
+	}
 
-	public Piece(Alliance alliance, Board board, int position, King king) {
+	public Piece(Alliance alliance, Board board, int row, int col) {
 		this.alliance = alliance;
-		this.position = position;
 		this.board = board;
-		this.myKing = king;
+		this.row = row;
+		this.col = col;
 	}
 
-	public Piece(Alliance alliance, Board board, int position) {
-		this.alliance = alliance;
-		this.position = position;
-		this.board = board;
+	public abstract ArrayList<Tile> calculateLegalMoves();
+
+	public Board getBoard() {
+		return board;
 	}
 
-	public void setPosition(int newPos) {
-		this.position = newPos;
+	public Tile getTileAt(int x, int y) {
+		return this.getBoard().getChessboard()[x][y];
 	}
 
-	public boolean isKingInCheck(Board board, int proposedMove) {
-		isKingInCheckRunning = true;
+	public Alliance getAlliance() {
+		return alliance;
+	}
 
-		Piece piece = null;
-		int loc = this.getPosition();
-		if (this.getBoard().isPieceAt(proposedMove)) {
-			piece = getBoard().getPieceAt(proposedMove);
+	public void setRow(int row) {
+		this.row = row;
+
+	}
+
+	public void setCol(int col) {
+		this.col = col;
+	}
+
+	public int getRow() {
+		return row;
+	}
+
+	public int getCol() {
+		return col;
+	}
+
+	public boolean isPieceAt(int row, int col) {
+		return this.board.getChessboard()[row][col].isPiece();
+	}
+
+	public Piece getPieceAt(int row, int col) {
+		return this.board.getChessboard()[row][col].getPiece();
+	}
+
+	public Alliance getAllianceAt(int row, int col) {
+		return this.board.getChessboard()[row][col].getPiece().getAlliance();
+	}
+
+	// checks if a coordinate is on the board (used for calculating possible moves)
+	protected boolean withinRange(int x, int y) {
+		if (x >= 0 && x < board.BOARD_SIZE && y >= 0 && y < board.BOARD_SIZE) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	protected void rookMoves(int x, int y) {
+
+		for (int k = 1; k < board.BOARD_SIZE; k++) {
+
+			if (withinRange(row + k * x, col + k * y)) {
+
+				if (!isPieceAt(row + k * x, col + k * y)) {
+					addMove(row + k * x, col + k * y);
+				} else if (getAllianceAt(row + k * x, col + k * y) != alliance) {
+					addMove(row + k * x, col + k * y);
+					break;
+				} else {
+					break;
+				}
+
+			}
 		}
 
-		// move piece to proposed position
-		this.setPosition(proposedMove);
-		getBoard().getChessboard().get(proposedMove).setPiece(this);
-		getBoard().getChessboard().get(loc).clearPiece();
+	}
 
-		// for every enemy piece
-		for (int i = 0; i < 64; i++) {
-			if (this.getBoard().isPieceAt(i) && this.getBoard().getAllianceAt(i) != this.getAlliance()) {
+	public boolean isKingInCheck(int proposedRow, int proposedCol) {
+		if (myPlayer != null) {
+
+			// isKingInCheckRunning is to avoid an infinite sequence of pieces running this
+			// method!
+			isKingInCheckRunning = true;
+
+			int currentRow = this.row;
+			int currentCol = this.col;
+
+			Piece piece = null;
+			if (isPieceAt(proposedRow, proposedCol)) {
+				piece = getPieceAt(proposedRow, proposedCol);
+
+				piece.setRow(board.BOARD_SIZE + 1);
+				piece.setCol(board.BOARD_SIZE + 1);
+
+			}
+
+			// move piece to proposed position
+			this.row = proposedRow;
+			this.col = proposedCol;
+			board.getChessboard()[proposedRow][proposedCol].setPiece(this);
+			board.getChessboard()[currentRow][currentCol].clearPiece();
+
+			// for every enemy piece
+			for (Piece enemyPiece : enemyPlayer.getActivePieces()) {
 				// if they could take the King
-				if (this.getBoard().getPieceAt(i).calculateLegalMoves().contains(myKing.getPosition())) {
+				if (enemyPiece.calculateLegalMoves().contains(
+						board.getChessboard()[myPlayer.getMyKing().getRow()][myPlayer.getMyKing().getCol()])) {
 
 					// change the piece back
-					this.setPosition(loc);
-					getBoard().getChessboard().get(loc).setPiece(this);
-					getBoard().getChessboard().get(proposedMove).clearPiece();
+					this.row = currentRow;
+					this.col = currentCol;
+					getBoard().getChessboard()[this.row][this.col].setPiece(this);
+					getBoard().getChessboard()[proposedRow][proposedCol].clearPiece();
 					if (piece != null) {
-						getBoard().getChessboard().get(proposedMove).setPiece(piece);
+						getBoard().getChessboard()[proposedRow][proposedCol].setPiece(piece);
+						piece.setRow(proposedRow);
+						piece.setCol(proposedRow);
 					}
 					isKingInCheckRunning = false;
 
 					return true;
 
 				}
+
 			}
+			// change the piece back
+			this.row = currentRow;
+			this.col = currentCol;
+			getBoard().getChessboard()[this.row][this.col].setPiece(this);
+			getBoard().getChessboard()[proposedRow][proposedCol].clearPiece();
+			if (piece != null) {
+				getBoard().getChessboard()[proposedRow][proposedCol].setPiece(piece);
+			}
+			isKingInCheckRunning = false;
 
+			return false;
 		}
-
-		// change the piece back
-		this.setPosition(loc);
-
-		getBoard().getChessboard().get(loc).setPiece(this);
-		getBoard().getChessboard().get(proposedMove).clearPiece();
-		if (piece != null) {
-			getBoard().getChessboard().get(proposedMove).setPiece(piece);
-		}
-		isKingInCheckRunning = false;
 		return false;
 	}
 
-	public int getPosition() {
-		return this.position;
-	}
-
-	public Alliance getAlliance() {
-		return this.alliance;
-	}
-
-	public abstract ArrayList<Integer> calculateLegalMoves();
-
-	public Board getBoard() {
-		return board;
-	}
-
-	public Type getType() {
-		return type;
-	}
-
-	public King getMyKing() {
-		return myKing;
-	}
-
-	public void addMove(int x, ArrayList<Integer> moves) {
+	public void addMove(int x, int y) {
 		if (!isKingInCheckRunning) {
-			if (!isKingInCheck(this.getBoard(), x)
-					&& (!this.getBoard().isPieceAt(x) || this.getBoard().getAllianceAt(x) != this.getAlliance())) {
-				moves.add(x);
+			if (!isKingInCheck(x, y)) {
+				moves.add(getTileAt(x, y));
 			}
-		} else if (!this.getBoard().isPieceAt(x) || this.getBoard().getAllianceAt(x) != this.getAlliance()) {
-			moves.add(x);
+		} else {
+			moves.add(getTileAt(x, y));
 		}
 	}
+
 }

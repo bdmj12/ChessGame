@@ -18,7 +18,8 @@ import pieces.Rook;
 
 public class Tile extends JButton {
 
-	private final int position;
+	private final int row;
+	private final int col;
 
 	private Piece piece = null;
 
@@ -28,9 +29,10 @@ public class Tile extends JButton {
 	public static final Color LIGHT_TILE = new Color(208, 207, 109);
 	public static final Color POSS_MOVES = new Color(201, 201, 229);
 
-	public Tile(Color col, int loc) {
-		this.setBackground(col);
-		this.position = loc;
+	public Tile(Color color, int row, int col) {
+		this.setBackground(color);
+		this.row = row;
+		this.col = col;
 	}
 
 	public boolean isPiece() {
@@ -47,13 +49,18 @@ public class Tile extends JButton {
 		containsPiece = false;
 	}
 
-	public int getPosition() {
-		return this.position;
+	public int getRow() {
+		return this.row;
+	}
+
+	public int getCol() {
+		return this.col;
 	}
 
 	public void setPiece(Piece piece) {
 		this.piece = piece;
-		piece.setPosition(this.position);
+		piece.setRow(this.getRow());
+		piece.setCol(this.getCol());
 		containsPiece = true;
 
 		if (piece instanceof Pawn) {

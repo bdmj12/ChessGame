@@ -1,57 +1,129 @@
 package gameplay;
 
+import javax.swing.JPanel;
+
 import gui.Board;
+import gui.Gui;
 import pieces.Alliance;
-import pieces.Bishop;
-import pieces.King;
-import pieces.Knight;
-import pieces.Pawn;
-import pieces.Queen;
-import pieces.Rook;
+import pieces.Piece;
 
 public class Game {
 
-	Board board;
-	King wKing;
-	King bKing;
+	private static Player whitePlayer;
+	private static Player blackPlayer;
+	private Gui gui;
 
-	public void buildGame() {
+	public static Alliance turn;
+
+	private static boolean isGameOver = false;
+
+	private static Board board;
+
+	public Game() {
+
+		isGameOver = false;
 
 		board = new Board();
 
-		// adds the pieces to the tiles
+		board.setGame(this);
 
-		// kings and queens
+		gui = new Gui(board);
 
-		bKing = new King(Alliance.BLACK, board, 4);
-		wKing = new King(Alliance.WHITE, board, 60);
+		whitePlayer = new Player(board, Alliance.WHITE);
+		blackPlayer = new Player(board, Alliance.BLACK);
 
-		board.setKings(wKing, bKing);
+		turn = Alliance.WHITE;
 
-		board.getChessboard().get(4).setPiece(bKing);
-		board.getChessboard().get(3).setPiece(new Queen(Alliance.BLACK, board, 3, bKing));
+		// adds the pieces to the board
 
-		board.getChessboard().get(60).setPiece(wKing);
-		board.getChessboard().get(59).setPiece(new Queen(Alliance.WHITE, board, 59, wKing));
-		// pawns
-		for (int i = 0; i < 8; i++) {
-			board.getChessboard().get(i + 8).setPiece(new Pawn(Alliance.BLACK, board, i + 8, bKing));
-			board.getChessboard().get(63 - i - 8).setPiece(new Pawn(Alliance.WHITE, board, i + 8, wKing));
+		for (Piece piece : whitePlayer.getActivePieces()) {
+			piece.setMyPlayer(whitePlayer);
+			piece.setEnemyPlayer(blackPlayer);
+			board.getChessboard()[piece.getRow()][piece.getCol()].setPiece(piece);
+
+		}
+		for (Piece piece : blackPlayer.getActivePieces()) {
+			piece.setMyPlayer(blackPlayer);
+			piece.setEnemyPlayer(whitePlayer);
+			board.getChessboard()[piece.getRow()][piece.getCol()].setPiece(piece);
 		}
 
-		// rooks,knight,bishops
-		for (int j = 0; j < 2; j++) {
-			board.getChessboard().get(7 * j).setPiece(new Rook(Alliance.BLACK, board, 7 * j, bKing));
-			board.getChessboard().get(5 * j + 1).setPiece(new Knight(Alliance.BLACK, board, 5 * j + 1, bKing));
-			board.getChessboard().get(3 * j + 2).setPiece(new Bishop(Alliance.BLACK, board, 3 * j + 2, bKing));
+		// update labels without checking for check and checkmate
+		Gui.updateLabels(false);
 
-			board.getChessboard().get(63 - 7 * j).setPiece(new Rook(Alliance.WHITE, board, 63 - 7 * j, wKing));
-			board.getChessboard().get(63 - 5 * j - 1)
-					.setPiece(new Knight(Alliance.WHITE, board, 63 - 5 * j - 1, wKing));
-			board.getChessboard().get(63 - 3 * j - 2)
-					.setPiece(new Bishop(Alliance.WHITE, board, 63 - 3 * j - 2, wKing));
+	}
+
+	public static boolean isGameOver() {
+		return isGameOver;
+	}
+
+	public static boolean isCheckMate() {
+		// if not in testMode, this checks whether
+		// the active player has any valid moves
+		// otherwise ---> checkmate!
+
+		if (Board.testMode == false) {
+			if (turn == Alliance.WHITE) {
+				for (Piece piece : whitePlayer.getActivePieces()) {
+					if (!piece.calculateLegalMoves().isEmpty()) {
+
+						return false;
+					}
+				}
+				isGameOver = true;
+				return true;
+			} else {
+				for (Piece piece : blackPlayer.getActivePieces()) {
+					if (!piece.calculateLegalMoves().isEmpty()) {
+						return false;
+					}
+				}
+
+				isGameOver = true;
+				return true;
+
+			}
 		}
+		return false;
 
+	}
+
+	public static void changeTurn() {
+		if (turn == Alliance.WHITE) {
+			turn = Alliance.BLACK;
+		} else {
+			turn = Alliance.WHITE;
+		}
+	}
+
+	public JPanel getBoard() {
+		return board;
+	}
+
+	// this method is to check whether to update the labels or not
+	public static boolean inCheck() {
+		if (Board.testMode == false) {
+			if (turn == Alliance.WHITE) {
+				for (Piece piece : blackPlayer.getActivePieces()) {
+					if (piece.calculateLegalMoves()
+							.contains(board.getChessboard()[whitePlayer.getMyKing().getRow()][whitePlayer.getMyKing()
+									.getCol()])) {
+						return true;
+					}
+				}
+				return false;
+			} else {
+				for (Piece piece : whitePlayer.getActivePieces()) {
+					if (piece.calculateLegalMoves()
+							.contains(board.getChessboard()[blackPlayer.getMyKing().getRow()][blackPlayer.getMyKing()
+									.getCol()])) {
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+		return false;
 	}
 
 }

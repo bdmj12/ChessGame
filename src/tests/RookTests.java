@@ -1,27 +1,28 @@
 package tests;
 
-import gui.Board;
-import pieces.Alliance;
-import pieces.Bishop;
-import pieces.Queen;
-import pieces.Rook;
-
 public class RookTests {
-	
-//	public static void main(String[] args) {
-//		
-//		int pos = 10;
-//		
-//		Board board = new Board();
-//		Rook rook = new Rook(Alliance.WHITE, board, pos);
-//		board.chessboard.get(pos).setPiece(rook);
-//		
-//		board.chessboard.get(13).setPiece(new Bishop(Alliance.BLACK,board,13));
-//	
-//		for(Integer move : rook.calculateLegalMoves()) {
-//			//System.out.println(move);
-//			board.chessboard.get(move).setPiece(new Rook(Alliance.BLACK,board,move));
-//		}
-//	}
+
+	// public static void main(String[] args) {
+	//
+	// Board board = new Board();
+	//
+	// board.testMode = true;
+	//
+	// Rook rook = new Rook(Alliance.WHITE, board, 5, 6);
+	//
+	// Pawn p0 = new Pawn(Alliance.BLACK, board, 1, 2);
+	// Pawn p1 = new Pawn(Alliance.WHITE, board, 7, 6);
+	// Pawn p2 = new Pawn(Alliance.BLACK, board, 0, 5);
+	// Pawn p3 = new Pawn(Alliance.WHITE, board, 2, 4);
+	//
+	// board.getChessboard()[5][6].setPiece(rook);
+	// board.getChessboard()[1][2].setPiece(p0);
+	// board.getChessboard()[7][6].setPiece(p1);
+	// board.getChessboard()[0][5].setPiece(p2);
+	// board.getChessboard()[6][2].setPiece(p3);
+	//
+	// Gui gui = new Gui(board);
+	//
+	// }
 
 }

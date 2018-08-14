@@ -1,226 +1,149 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import pieces.Alliance;
-import pieces.King;
-import pieces.Piece;
+import gameplay.Game;
 
-public class Board implements ActionListener {
+public class Board extends JPanel implements ActionListener {
 
-	private JFrame frame;
-	private JPanel panel;
-	private JPanel panel2;
-	private JLabel leftLabel;
-	private JLabel rightLabel;
-	private King wKing;
-	private King bKing;
-
+	public static final int BOARD_SIZE = 8;
 	private boolean tilePainter = true;
+
+	private Game game;
+
 	private boolean isTileSelected = false;
 
-	private boolean isGameOver = false;
+	// eg. we can add individual pieces to the board in testMode
+	public static boolean testMode = false;
+
 	private Tile selectedTile;
-	private Alliance turn = Alliance.WHITE;
+	private Tile clickedTile;
 
-	private String wturn = "White's turn.";
-	private String bturn = "Black's turn";
-
-	// int i=0;
-	private ArrayList<Tile> chessboard = new ArrayList<Tile>();
-
-	public final static int HEIGHT = 675;
-	public final static int WIDTH = 600;
+	private Tile[][] chessboard = new Tile[BOARD_SIZE][BOARD_SIZE];
 
 	public Board() {
-		frame = new JFrame();
-		panel = new JPanel(new GridLayout(8, 8));
-		panel2 = new JPanel();
-		leftLabel = new JLabel(wturn);
-		rightLabel = new JLabel();
 
-		for (int i = 0; i < 64; i++) {
+		this.setPreferredSize(new Dimension(WIDTH, HEIGHT - 75));
 
-			// adds and colours the tiles
-			if (tilePainter) {
-				chessboard.add(new Tile(Tile.LIGHT_TILE, i));
-			} else {
-				chessboard.add(new Tile(Tile.DARK_TILE, i));
-			}
-			if (i % 8 != 7) {
-				tilePainter = !tilePainter;
-			}
+		this.setLayout(new GridLayout(BOARD_SIZE, BOARD_SIZE));
 
-			// adds actionlistener to each tile
-			chessboard.get(i).addActionListener(this);
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
 
-			// adds each tile to panel
-			panel.add(chessboard.get(i));
-		}
-
-		panel2.setPreferredSize(new Dimension(WIDTH, 40));
-		panel.setPreferredSize(new Dimension(WIDTH, HEIGHT - 75));
-
-		panel2.setLayout(new BoxLayout(panel2, BoxLayout.X_AXIS));
-		panel2.add(leftLabel);
-		panel2.add(Box.createRigidArea(new Dimension(WIDTH - 350, 0)));
-		panel2.add(rightLabel);
-		// text.setHorizontalAlignment(SwingConstants.CENTER);
-		leftLabel.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-		rightLabel.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-
-		// adds panels to frame and builds frame
-		frame.getContentPane().add(BorderLayout.NORTH, panel);
-		frame.getContentPane().add(BorderLayout.SOUTH, panel2);
-
-		frame.setSize(WIDTH, HEIGHT);
-		frame.setVisible(true);
-		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-	}
-
-	public void repaintBoard() {
-
-		tilePainter = true;
-
-		for (int i = 0; i < 64; i++) {
-
-			// colours the tiles
-			if (tilePainter) {
-				chessboard.get(i).setBackground(Tile.LIGHT_TILE);
-			} else {
-				chessboard.get(i).setBackground(Tile.DARK_TILE);
-			}
-			if (i % 8 != 7) {
-				tilePainter = !tilePainter;
-			}
-
-		}
-
-	}
-
-	public void setKings(King wKing, King bKing) {
-		this.wKing = wKing;
-		this.bKing = bKing;
-	}
-
-	public boolean isCheckMate() {
-		// test for checkmate
-
-		for (int i = 0; i < 64; i++) {
-			if (isPieceAt(i) && getAllianceAt(i) == turn) {
-				if (!getPieceAt(i).calculateLegalMoves().isEmpty()) {
-					return false;
+				// adds tiles to chessboard array
+				if (tilePainter) {
+					chessboard[i][j] = new Tile(Tile.LIGHT_TILE, i, j);
+				} else {
+					chessboard[i][j] = new Tile(Tile.DARK_TILE, i, j);
 				}
+				if (j != BOARD_SIZE - 1) {
+					tilePainter = !tilePainter;
+				}
+
+				// adds actionListener to each tile
+				chessboard[i][j].addActionListener(this);
+
+				// adds each tile to the panel (this)
+				this.add(chessboard[i][j]);
 			}
-
-		}
-		isGameOver = true;
-		if (turn == Alliance.BLACK) {
-			rightLabel.setText("Checkmate! White wins!");
-		} else {
-			rightLabel.setText("Checkmate! White wins!");
-		}
-		return true;
-
-	}
-
-	public ArrayList<Tile> getChessboard() {
-		return this.chessboard;
-	}
-
-	public boolean isPieceAt(int x) {
-		return chessboard.get(x).isPiece();
-	}
-
-	public Piece getPieceAt(int x) {
-		if (chessboard.get(x).isPiece()) {
-			return chessboard.get(x).getPiece();
-		} else {
-			return null;
 		}
 	}
 
-	public Alliance getAllianceAt(int x) {
-		if (chessboard.get(x).isPiece()) {
-			return chessboard.get(x).getPiece().getAlliance();
-		} else {
-			return null;
+	private void repaintBoard() {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+
+				// repaints tiles (eg. after highlighting possible moves)
+				if (tilePainter) {
+					chessboard[i][j].setBackground(Tile.LIGHT_TILE);
+				} else {
+					chessboard[i][j].setBackground(Tile.DARK_TILE);
+				}
+				if (j != BOARD_SIZE - 1) {
+					tilePainter = !tilePainter;
+				}
+
+			}
 		}
+	}
+
+	public Game getGame() {
+		return game;
+	}
+
+	public void setGame(Game game) {
+		this.game = game;
+	}
+
+	public Tile[][] getChessboard() {
+		return chessboard;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (!isGameOver) {
-
+		if (!Game.isGameOver()) {
 			if (e.getSource() instanceof Tile) {
-				Tile clickedTile = (Tile) e.getSource();
+				clickedTile = (Tile) e.getSource();
 
 				if (!isTileSelected) {
-					if (clickedTile.isPiece() && clickedTile.getPiece().getAlliance() == turn
-							&& !clickedTile.getPiece().calculateLegalMoves().isEmpty()) {
-						selectedTile = clickedTile;
-						isTileSelected = true;
-						for (Integer move : selectedTile.getPiece().calculateLegalMoves()) {
-							chessboard.get(move).setBackground(Tile.POSS_MOVES);
+					// if theres a tile there with non-empty possible moves
+					if (clickedTile.isPiece() && !clickedTile.getPiece().calculateLegalMoves().isEmpty()) {
+						// if we are in text mode OR it is that pieces turn to play
+						if (testMode == true || clickedTile.getPiece().getAlliance() == Game.turn) {
+
+							// selects the tile and displays possible moves
+							selectedTile = clickedTile;
+							isTileSelected = true;
+							for (Tile move : selectedTile.getPiece().calculateLegalMoves()) {
+								move.setBackground(Tile.POSS_MOVES);
+							}
 						}
 					}
+					// otherwise nothing happens
 				} else {
+
+					// i.e. repaint the possibleMoves tiles
 					repaintBoard();
-					if (selectedTile.getPiece().calculateLegalMoves().contains(clickedTile.getPosition())) {
+
+					if (selectedTile.getPiece().calculateLegalMoves().contains(clickedTile)) {
+
+						if (Board.testMode == false) {
+							if (clickedTile.isPiece()) {
+
+								// update active and captured pieces
+								selectedTile.getPiece().getMyPlayer().getCapturedPieces().add(clickedTile.getPiece());
+								clickedTile.getPiece().getMyPlayer().getActivePieces().remove(clickedTile.getPiece());
+							}
+						}
 
 						// move the piece
 						clickedTile.setPiece(selectedTile.getPiece());
-						clickedTile.getPiece().setPosition(clickedTile.getPosition());
+						clickedTile.getPiece().setRow(clickedTile.getRow());
+						clickedTile.getPiece().setCol(clickedTile.getCol());
 
-						// display check in rightLabel if necessary
-
+						// clears the old tile
 						selectedTile.clearPiece();
 
-						if (turn == Alliance.WHITE) {
-							turn = Alliance.BLACK;
-							leftLabel.setText(bturn);
-						} else {
-							turn = Alliance.WHITE;
-							leftLabel.setText(wturn);
-						}
+						Game.changeTurn();
 
-						if (turn == Alliance.WHITE) {
-							if (wKing.inCheck()) {
-								rightLabel.setText("Check!");
-							} else {
-								rightLabel.setText("");
-							}
-
-						} else if (bKing.inCheck()) {
-							rightLabel.setText("Check!");
-						} else {
-							rightLabel.setText("");
-						}
 					}
 
 					isTileSelected = false;
 
+					e.setSource(null);
+
+					// this includes checking for checkmate (via isCheckMate() in Game)
+					Gui.updateLabels(true);
+
 				}
-
-				e.setSource(null);
-
-				isCheckMate();
 			}
-		}
 
+		}
 	}
+
 }
