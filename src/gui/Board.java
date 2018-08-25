@@ -15,6 +15,11 @@ public class Board extends JPanel implements ActionListener {
 	private boolean tilePainter = true;
 
 	private Game game;
+	private Gui gui;
+
+	public void setGui(Gui gui) {
+		this.gui = gui;
+	}
 
 	private boolean isTileSelected = false;
 
@@ -86,7 +91,7 @@ public class Board extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (!Game.isGameOver()) {
+		if (!game.isGameOver()) {
 			if (e.getSource() instanceof Tile) {
 				clickedTile = (Tile) e.getSource();
 
@@ -115,19 +120,28 @@ public class Board extends JPanel implements ActionListener {
 						if (Board.testMode == false) {
 							if (clickedTile.isPiece()) {
 
-								// update active and captured pieces
-								selectedTile.getPiece().getMyPlayer().getCapturedPieces().add(clickedTile.getPiece());
-								clickedTile.getPiece().getMyPlayer().getActivePieces().remove(clickedTile.getPiece());
+								// set capturedPiece position to null
+								try {
+									clickedTile.getPiece().setRow((Integer) null);
+									clickedTile.getPiece().setCol((Integer) null);
+								} catch (NullPointerException ne) {
+
+								}
+
 							}
 						}
 
 						// move the piece
+
 						clickedTile.setPiece(selectedTile.getPiece());
 						clickedTile.getPiece().setRow(clickedTile.getRow());
 						clickedTile.getPiece().setCol(clickedTile.getCol());
+						game.updatePositions();
 
 						// clears the old tile
 						selectedTile.clearPiece();
+
+						game.numOfMoves++;
 
 						Game.changeTurn();
 
@@ -138,12 +152,21 @@ public class Board extends JPanel implements ActionListener {
 					e.setSource(null);
 
 					// this includes checking for checkmate (via isCheckMate() in Game)
-					Gui.updateLabels(true);
+					gui.updateLabels(true);
 
 				}
 			}
 
 		}
+	}
+
+	public void clearBoard() {
+		for (int i = 0; i < Board.BOARD_SIZE; i++) {
+			for (int j = 0; j < Board.BOARD_SIZE; j++) {
+				chessboard[i][j].clearPiece();
+			}
+		}
+
 	}
 
 }

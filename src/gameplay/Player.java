@@ -16,8 +16,7 @@ public class Player {
 
 	private Alliance alliance;
 
-	private ArrayList<Piece> activePieces = new ArrayList<>();
-	private ArrayList<Piece> capturedPieces = new ArrayList<>();
+	private ArrayList<Piece> pieces = new ArrayList<>();
 
 	// to simplify code later
 	private int rowIndex;
@@ -43,37 +42,29 @@ public class Player {
 		myKing = new King(alliance, board, rowIndex, 4);
 
 		// adds King and Queen
-		activePieces.add(myKing);
-		activePieces.add(new Queen(alliance, board, rowIndex, 3));
+		pieces.add(myKing);
+		pieces.add(new Queen(alliance, board, rowIndex, 3));
 
 		// adds rooks, knights, bishops
 		for (int i = 0; i < 2; i++) {
-			activePieces.add(new Bishop(alliance, board, rowIndex, 2 + 3 * i));
-			activePieces.add(new Knight(alliance, board, rowIndex, 1 + 5 * i));
-			activePieces.add(new Rook(alliance, board, rowIndex, 7 * i));
+			pieces.add(new Bishop(alliance, board, rowIndex, 2 + 3 * i));
+			pieces.add(new Knight(alliance, board, rowIndex, 1 + 5 * i));
+			pieces.add(new Rook(alliance, board, rowIndex, 7 * i));
 		}
 
 		// adds pawns
 		for (int i = 0; i < 8; i++) {
-			activePieces.add(new Pawn(alliance, board, (int) Math.round((5.0 / 7.0) * rowIndex + 1), i));
+			pieces.add(new Pawn(alliance, board, (int) Math.round((5.0 / 7.0) * rowIndex + 1), i));
 		}
 
 	}
 
-	public ArrayList<Piece> getActivePieces() {
-		return activePieces;
+	public ArrayList<Piece> getPieces() {
+		return pieces;
 	}
 
-	public void setActivePieces(ArrayList<Piece> activePieces) {
-		this.activePieces = activePieces;
-	}
-
-	public ArrayList<Piece> getCapturedPieces() {
-		return capturedPieces;
-	}
-
-	public void setCapturedPieces(ArrayList<Piece> capturedPieces) {
-		this.capturedPieces = capturedPieces;
+	public void setPieces(ArrayList<Piece> pieces) {
+		this.pieces = pieces;
 	}
 
 }

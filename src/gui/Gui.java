@@ -17,7 +17,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import gameplay.Game;
-import gameplay.Main;
 import pieces.Alliance;
 
 public class Gui implements ActionListener {
@@ -29,6 +28,13 @@ public class Gui implements ActionListener {
 
 	private Board board; // extends JPanel!
 
+	private Game game;
+
+	public void setGame(Game game) {
+		this.game = game;
+		undo.addActionListener(game);
+	}
+
 	private static String wturn = "White's Turn.";
 	private static String bturn = "Black's Turn.";
 
@@ -36,28 +42,25 @@ public class Gui implements ActionListener {
 	private JMenu menu;
 	private JMenuItem undo;
 	private JMenuItem newGame;
-	private JMenuItem redo;
-
-	private JOptionPane newGameDialog;
 
 	public final static int WIDTH = 600;
 	public final static int HEIGHT = 675;
 
-	public Gui(Board board) {
+	public Gui() {
 		// creates the window
 		mainFrame = new JFrame();
-		this.board = board;
+
+		board = new Board();
+		board.setGui(this);
 
 		menu = new JMenu("Game");
 		undo = new JMenuItem("Undo");
-		redo = new JMenuItem("Redo");
 		newGame = new JMenuItem("New Game");
 
 		newGame.addActionListener(this);
 
 		menu.add(newGame);
 		menu.add(undo);
-		menu.add(redo);
 
 		menuBar = new JMenuBar();
 		mainFrame.setJMenuBar(menuBar);
@@ -88,7 +91,11 @@ public class Gui implements ActionListener {
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	public static void updateLabels(boolean bool) {
+	public Board getBoard() {
+		return board;
+	}
+
+	public void updateLabels(boolean bool) {
 
 		// turn label
 		if (Game.turn == Alliance.WHITE) {
@@ -99,11 +106,11 @@ public class Gui implements ActionListener {
 
 		// test for check & checkmate
 		if (bool) {
-			if (Game.isCheckMate()) {
+			if (game.isCheckMate()) {
 				checkLabel.setText("Checkmate!");
 			}
 
-			else if (Game.inCheck()) {
+			else if (game.inCheck()) {
 				checkLabel.setText("Check!");
 			} else {
 				checkLabel.setText("");
@@ -112,16 +119,23 @@ public class Gui implements ActionListener {
 
 	}
 
+	// new Game
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent e) {
 
-		// to add later
-		// newGameDialog = new JOptionPane();
+		int reply = JOptionPane.showConfirmDialog(mainFrame, "Are you sure you want to start a new game?", "",
+				JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
+		if (reply == JOptionPane.YES_OPTION) {
+			// clear board
+			board.clearBoard();
 
-		mainFrame.setVisible(false);
-		mainFrame.dispose();
-		Main.main(null);
+			// clear checklabel
+			checkLabel.setText("");
 
+			// create a new Game
+			game = new Game(this);
+
+		}
 	}
 
 }

@@ -1,10 +1,14 @@
 package gameplay;
 
+import gui.Gui;
+
 public class Main {
 
 	public static void main(String[] args) {
 
-		Game game = new Game();
+		Gui gui = new Gui();
+
+		Game game = new Game(gui);
 
 	}
 

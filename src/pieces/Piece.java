@@ -17,6 +17,16 @@ public abstract class Piece {
 	protected Player myPlayer;
 	protected Player enemyPlayer;
 
+	protected ArrayList<Tile> positionHistory;
+
+	public ArrayList<Tile> getPreviousPositions() {
+		return positionHistory;
+	}
+
+	public void setPreviousPositions(ArrayList<Tile> previousPositions) {
+		this.positionHistory = previousPositions;
+	}
+
 	public Player getMyPlayer() {
 		return myPlayer;
 	}
@@ -35,10 +45,12 @@ public abstract class Piece {
 	}
 
 	public Piece(Alliance alliance, Board board, int row, int col) {
+		positionHistory = new ArrayList<>();
 		this.alliance = alliance;
 		this.board = board;
 		this.row = row;
 		this.col = col;
+		updatePosition();
 	}
 
 	public abstract ArrayList<Tile> calculateLegalMoves();
@@ -139,7 +151,7 @@ public abstract class Piece {
 			board.getChessboard()[currentRow][currentCol].clearPiece();
 
 			// for every enemy piece
-			for (Piece enemyPiece : enemyPlayer.getActivePieces()) {
+			for (Piece enemyPiece : enemyPlayer.getPieces()) {
 				// if they could take the King
 				if (enemyPiece.calculateLegalMoves().contains(
 						board.getChessboard()[myPlayer.getMyKing().getRow()][myPlayer.getMyKing().getCol()])) {
@@ -183,6 +195,18 @@ public abstract class Piece {
 			}
 		} else {
 			moves.add(getTileAt(x, y));
+		}
+	}
+
+	public void updatePosition() {
+		try {
+			positionHistory.add(board.getChessboard()[row][col]);
+		} catch (NullPointerException e) {
+			try {
+				positionHistory.add(null);
+			} catch (NullPointerException ex) {
+
+			}
 		}
 	}
 

@@ -46,6 +46,7 @@ public class Tile extends JButton {
 	public void clearPiece() {
 		this.piece = null;
 		this.setIcon(null);
+
 		containsPiece = false;
 	}
 
