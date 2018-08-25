@@ -120,13 +120,9 @@ public class Board extends JPanel implements ActionListener {
 						if (Board.testMode == false) {
 							if (clickedTile.isPiece()) {
 
-								// set capturedPiece position to null
-								try {
-									clickedTile.getPiece().setRow((Integer) null);
-									clickedTile.getPiece().setCol((Integer) null);
-								} catch (NullPointerException ne) {
-
-								}
+								// set capturedPiece position to off the board
+								clickedTile.getPiece().setRow(BOARD_SIZE + 1);
+								clickedTile.getPiece().setCol(BOARD_SIZE + 1);
 
 							}
 						}

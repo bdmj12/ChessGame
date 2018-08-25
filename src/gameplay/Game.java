@@ -18,15 +18,20 @@ public class Game implements ActionListener {
 	private ArrayList<Piece> allPieces;
 	private Gui gui;
 
+	private int newRow;
+	private int newCol;
+
 	public static Alliance turn;
 
 	private static boolean isGameOver = false;
 
 	private Board board;
 
-	public int numOfMoves = 0;
+	public int numOfMoves;
 
 	public Game(Gui gui) {
+
+		numOfMoves = 0;
 
 		isGameOver = false;
 
@@ -124,19 +129,23 @@ public class Game implements ActionListener {
 		if (Board.testMode == false) {
 			if (turn == Alliance.WHITE) {
 				for (Piece piece : blackPlayer.getPieces()) {
-					if (piece.calculateLegalMoves()
-							.contains(board.getChessboard()[whitePlayer.getMyKing().getRow()][whitePlayer.getMyKing()
-									.getCol()])) {
-						return true;
+					if (piece.getRow() != board.BOARD_SIZE + 1) {
+						if (piece.calculateLegalMoves()
+								.contains(board.getChessboard()[whitePlayer.getMyKing().getRow()][whitePlayer
+										.getMyKing().getCol()])) {
+							return true;
+						}
 					}
 				}
 				return false;
 			} else {
 				for (Piece piece : whitePlayer.getPieces()) {
-					if (piece.calculateLegalMoves()
-							.contains(board.getChessboard()[blackPlayer.getMyKing().getRow()][blackPlayer.getMyKing()
-									.getCol()])) {
-						return true;
+					if (piece.getRow() != board.BOARD_SIZE + 1) {
+						if (piece.calculateLegalMoves()
+								.contains(board.getChessboard()[blackPlayer.getMyKing().getRow()][blackPlayer
+										.getMyKing().getCol()])) {
+							return true;
+						}
 					}
 				}
 				return false;
@@ -159,19 +168,17 @@ public class Game implements ActionListener {
 			board.clearBoard();
 
 			for (Piece piece : allPieces) {
-				try {
-					int newRow = piece.getPreviousPositions().get(numOfMoves - 1).getRow();
-					int newCol = piece.getPreviousPositions().get(numOfMoves - 1).getCol();
 
+				newRow = piece.getPreviousPositions().get(numOfMoves - 1).getRow();
+				newCol = piece.getPreviousPositions().get(numOfMoves - 1).getCol();
+				if (newRow != board.BOARD_SIZE + 1) {
 					board.getChessboard()[newRow][newCol].setPiece(piece);
 					piece.setRow(newRow);
 					piece.setCol(newCol);
-				} catch (NullPointerException nex) {
 
-				} finally {
 					piece.getPreviousPositions().remove(numOfMoves - 1);
-				}
 
+				}
 			}
 
 			numOfMoves--;

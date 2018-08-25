@@ -8,11 +8,10 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -39,9 +38,8 @@ public class Gui implements ActionListener {
 	private static String bturn = "Black's Turn.";
 
 	private JMenuBar menuBar;
-	private JMenu menu;
-	private JMenuItem undo;
-	private JMenuItem newGame;
+	private JButton undo;
+	private JButton newGame;
 
 	public final static int WIDTH = 600;
 	public final static int HEIGHT = 675;
@@ -53,18 +51,15 @@ public class Gui implements ActionListener {
 		board = new Board();
 		board.setGui(this);
 
-		menu = new JMenu("Game");
-		undo = new JMenuItem("Undo");
-		newGame = new JMenuItem("New Game");
+		newGame = new JButton("New Game");
+		undo = new JButton("Undo");
 
 		newGame.addActionListener(this);
 
-		menu.add(newGame);
-		menu.add(undo);
-
 		menuBar = new JMenuBar();
 		mainFrame.setJMenuBar(menuBar);
-		menuBar.add(menu);
+		menuBar.add(newGame);
+		menuBar.add(undo);
 
 		lowerPanel = new JPanel();
 		turnLabel = new JLabel();

@@ -199,14 +199,10 @@ public abstract class Piece {
 	}
 
 	public void updatePosition() {
-		try {
+		if (row != board.BOARD_SIZE + 1) {
 			positionHistory.add(board.getChessboard()[row][col]);
-		} catch (NullPointerException e) {
-			try {
-				positionHistory.add(null);
-			} catch (NullPointerException ex) {
-
-			}
+		} else {
+			positionHistory.add(new Tile(row, col));
 		}
 	}
 

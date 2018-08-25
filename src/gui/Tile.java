@@ -35,6 +35,12 @@ public class Tile extends JButton {
 		this.col = col;
 	}
 
+	// this constructor is to make 'ghost' tiles that captured pieces live on
+	public Tile(int row, int col) {
+		this.row = row;
+		this.col = col;
+	}
+
 	public boolean isPiece() {
 		return containsPiece;
 	}
