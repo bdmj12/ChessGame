@@ -21,6 +21,12 @@ public class Game implements ActionListener {
 	private int newRow;
 	private int newCol;
 
+	private static Mode mode;
+
+	public Mode getMode() {
+		return mode;
+	}
+
 	public static Alliance turn;
 
 	private static boolean isGameOver = false;
@@ -29,7 +35,9 @@ public class Game implements ActionListener {
 
 	public int numOfMoves;
 
-	public Game(Gui gui) {
+	public Game(Gui gui, Mode mode, int boardSize) {
+
+		this.mode = mode;
 
 		numOfMoves = 0;
 
@@ -42,8 +50,16 @@ public class Game implements ActionListener {
 
 		board.setGame(this);
 
-		whitePlayer = new Player(board, Alliance.WHITE);
-		blackPlayer = new Player(board, Alliance.BLACK);
+		if (mode == Mode.NORMAL) {
+
+			whitePlayer = new Player(board, Alliance.WHITE);
+			blackPlayer = new Player(board, Alliance.BLACK);
+		}
+
+		else {
+			whitePlayer = new Player(board, Alliance.WHITE, boardSize);
+			blackPlayer = new Player(board, Alliance.BLACK, boardSize);
+		}
 
 		turn = Alliance.WHITE;
 
@@ -86,7 +102,7 @@ public class Game implements ActionListener {
 		// the active player has any valid moves
 		// otherwise ---> checkmate!
 
-		if (Board.testMode == false) {
+		if (mode != Mode.TEST) {
 			if (turn == Alliance.WHITE) {
 				for (Piece piece : whitePlayer.getPieces()) {
 					if (!piece.calculateLegalMoves().isEmpty()) {
@@ -126,7 +142,7 @@ public class Game implements ActionListener {
 
 	// this method is to check whether to update the labels or not
 	public boolean inCheck() {
-		if (Board.testMode == false) {
+		if (mode != Mode.TEST) {
 			if (turn == Alliance.WHITE) {
 				for (Piece piece : blackPlayer.getPieces()) {
 					if (piece.getRow() != board.BOARD_SIZE + 1) {

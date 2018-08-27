@@ -8,14 +8,17 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 import gameplay.Game;
+import gameplay.Mode;
 import pieces.Alliance;
 
 public class Gui implements ActionListener {
@@ -24,6 +27,19 @@ public class Gui implements ActionListener {
 	private JPanel lowerPanel;
 	private static JLabel turnLabel;
 	private static JLabel checkLabel;
+
+	private ActionListener newGameAL;
+
+	private JButton okButton;
+	private JButton cancelButton;
+
+	private JPanel dialogPanel;
+
+	private JRadioButton normalChess;
+	private JRadioButton crazyChess;
+	private ButtonGroup buttonGroup;
+
+	private JDialog dialog;
 
 	private Board board; // extends JPanel!
 
@@ -48,7 +64,27 @@ public class Gui implements ActionListener {
 		// creates the window
 		mainFrame = new JFrame();
 
-		board = new Board();
+		// creates the dialog window
+		normalChess = new JRadioButton("Normal.");
+		crazyChess = new JRadioButton("Crazy!");
+		buttonGroup = new ButtonGroup();
+
+		buttonGroup.add(normalChess);
+		buttonGroup.add(crazyChess);
+
+		okButton = new JButton("OK");
+
+		okButton.addActionListener(this);
+
+		dialogPanel = new JPanel();
+
+		dialogPanel.add(normalChess);
+		dialogPanel.add(crazyChess);
+		dialogPanel.add(okButton);
+
+		dialogPanel.setLocation(WIDTH / 2, HEIGHT / 2);
+
+		board = new Board(8);
 		board.setGui(this);
 
 		newGame = new JButton("New Game");
@@ -84,6 +120,7 @@ public class Gui implements ActionListener {
 		mainFrame.setVisible(true);
 		mainFrame.setResizable(false);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 	}
 
 	public Board getBoard() {
@@ -118,19 +155,34 @@ public class Gui implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		int reply = JOptionPane.showConfirmDialog(mainFrame, "Are you sure you want to start a new game?", "",
-				JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
-		if (reply == JOptionPane.YES_OPTION) {
-			// clear board
-			board.clearBoard();
+		if (e.getSource() == newGame) {
 
-			// clear checklabel
-			checkLabel.setText("");
+			dialog = new JDialog(mainFrame);
+			dialog.add(dialogPanel);
+			dialog.setTitle("New Game");
 
-			// create a new Game
-			game = new Game(this);
+			dialog.setModal(true);
+			dialog.pack();
+			dialog.setVisible(true);
 
+		} else {
+			mainFrame.remove(board);
+
+			if (normalChess.isSelected()) {
+				board = new Board(8);
+				board.setGui(this);
+				mainFrame.getContentPane().add(BorderLayout.CENTER, board);
+
+				game = new Game(this, Mode.NORMAL, 8);
+				dialog.dispose();
+			} else {
+				board = new Board(12);
+				board.setGui(this);
+				mainFrame.getContentPane().add(BorderLayout.CENTER, board);
+
+				game = new Game(this, Mode.CRAZY, 12);
+				dialog.dispose();
+			}
 		}
 	}
-
 }

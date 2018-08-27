@@ -1,6 +1,7 @@
 package gameplay;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import gui.Board;
 import pieces.Alliance;
@@ -21,7 +22,8 @@ public class Player {
 	// to simplify code later
 	private int rowIndex;
 
-	private Board board;
+	private Random randomGenerator = new Random();
+	private int rand;
 
 	private King myKing;
 
@@ -29,8 +31,8 @@ public class Player {
 		return myKing;
 	}
 
+	// constructor for normal chess
 	public Player(Board board, Alliance all) {
-		this.board = board;
 		this.alliance = all;
 
 		if (alliance == Alliance.WHITE) {
@@ -57,6 +59,44 @@ public class Player {
 			pieces.add(new Pawn(alliance, board, (int) Math.round((5.0 / 7.0) * rowIndex + 1), i));
 		}
 
+	}
+
+	// this is the constructor for crazy chess
+	public Player(Board board, Alliance all, int boardSize) {
+		this.alliance = all;
+
+		if (alliance == Alliance.WHITE) {
+			rowIndex = boardSize - 1;
+		} else {
+			rowIndex = 0;
+		}
+
+		myKing = new King(alliance, board, rowIndex, boardSize / 2 - 1);
+
+		// adds King and Queen
+		pieces.add(myKing);
+		pieces.add(new Queen(alliance, board, rowIndex, boardSize / 2));
+
+		// adds rooks, knights, bishops
+		for (int i = 0; i < boardSize; i++) {
+			if (i != boardSize / 2 && i != boardSize / 2 - 1) {
+				rand = randomGenerator.nextInt(3);
+				if (rand == 0) {
+					pieces.add(new Rook(alliance, board, rowIndex, i));
+				}
+				if (rand == 1) {
+					pieces.add(new Bishop(alliance, board, rowIndex, i));
+				}
+				if (rand == 2) {
+					pieces.add(new Knight(alliance, board, rowIndex, i));
+				}
+			}
+		}
+
+		// adds pawns
+		for (int i = 0; i < boardSize; i++) {
+			pieces.add(new Pawn(alliance, board, (int) ((boardSize - 3) / ((float) boardSize - 1) * rowIndex + 1), i));
+		}
 	}
 
 	public ArrayList<Piece> getPieces() {

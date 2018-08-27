@@ -8,7 +8,7 @@ public class Main {
 
 		Gui gui = new Gui();
 
-		Game game = new Game(gui);
+		Game game = new Game(gui, Mode.NORMAL, 8);
 
 	}
 

@@ -21,6 +21,8 @@ public class Tile extends JButton {
 	private final int row;
 	private final int col;
 
+	private double scaleFac = 0.75;
+
 	private Piece piece = null;
 
 	private boolean containsPiece = false;
@@ -74,6 +76,8 @@ public class Tile extends JButton {
 			if (piece.getAlliance() == Alliance.WHITE) {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/wpawn.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -81,6 +85,8 @@ public class Tile extends JButton {
 			} else {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/bpawn.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -92,6 +98,8 @@ public class Tile extends JButton {
 			if (piece.getAlliance() == Alliance.WHITE) {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/wbishop.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -99,6 +107,8 @@ public class Tile extends JButton {
 			} else {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/bbishop.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -110,6 +120,8 @@ public class Tile extends JButton {
 			if (piece.getAlliance() == Alliance.WHITE) {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/wrook.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -117,6 +129,8 @@ public class Tile extends JButton {
 			} else {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/brook.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -128,6 +142,8 @@ public class Tile extends JButton {
 			if (piece.getAlliance() == Alliance.WHITE) {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/wknight.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -135,6 +151,8 @@ public class Tile extends JButton {
 			} else {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/bknight.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -146,6 +164,8 @@ public class Tile extends JButton {
 			if (piece.getAlliance() == Alliance.WHITE) {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/wking.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -153,6 +173,8 @@ public class Tile extends JButton {
 			} else {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/bking.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -164,6 +186,8 @@ public class Tile extends JButton {
 			if (piece.getAlliance() == Alliance.WHITE) {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/wqueen.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);
@@ -171,6 +195,8 @@ public class Tile extends JButton {
 			} else {
 				try {
 					Image img = ImageIO.read(this.getClass().getResource("ChessPieces/bqueen.png"));
+					img = img.getScaledInstance((int) (Gui.WIDTH * scaleFac / Board.BOARD_SIZE),
+							(int) ((Gui.HEIGHT * scaleFac - 75) / Board.BOARD_SIZE), Image.SCALE_DEFAULT);
 					this.setIcon(new ImageIcon(img));
 				} catch (Exception ex) {
 					System.out.println(ex);

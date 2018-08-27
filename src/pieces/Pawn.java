@@ -19,7 +19,7 @@ public class Pawn extends Piece {
 			if (withinRange(row - 1, col) && !isPieceAt(row - 1, col)) {
 				addMove(row - 1, col);
 			}
-			if (row == 6 && !isPieceAt(row - 2, col)) {
+			if (row == Board.BOARD_SIZE - 2 && !isPieceAt(row - 2, col)) {
 				addMove(row - 2, col);
 			}
 

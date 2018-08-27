@@ -8,10 +8,11 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 
 import gameplay.Game;
+import gameplay.Mode;
 
 public class Board extends JPanel implements ActionListener {
 
-	public static final int BOARD_SIZE = 8;
+	public static int BOARD_SIZE;
 	private boolean tilePainter = true;
 
 	private Game game;
@@ -24,14 +25,17 @@ public class Board extends JPanel implements ActionListener {
 	private boolean isTileSelected = false;
 
 	// eg. we can add individual pieces to the board in testMode
-	public static boolean testMode = false;
 
 	private Tile selectedTile;
 	private Tile clickedTile;
 
-	private Tile[][] chessboard = new Tile[BOARD_SIZE][BOARD_SIZE];
+	private Tile[][] chessboard;
 
-	public Board() {
+	public Board(int boardSize) {
+
+		BOARD_SIZE = boardSize;
+
+		chessboard = new Tile[BOARD_SIZE][BOARD_SIZE];
 
 		this.setPreferredSize(new Dimension(WIDTH, HEIGHT - 75));
 
@@ -99,7 +103,7 @@ public class Board extends JPanel implements ActionListener {
 					// if theres a tile there with non-empty possible moves
 					if (clickedTile.isPiece() && !clickedTile.getPiece().calculateLegalMoves().isEmpty()) {
 						// if we are in text mode OR it is that pieces turn to play
-						if (testMode == true || clickedTile.getPiece().getAlliance() == Game.turn) {
+						if (game.getMode() == Mode.TEST || clickedTile.getPiece().getAlliance() == Game.turn) {
 
 							// selects the tile and displays possible moves
 							selectedTile = clickedTile;
@@ -117,7 +121,7 @@ public class Board extends JPanel implements ActionListener {
 
 					if (selectedTile.getPiece().calculateLegalMoves().contains(clickedTile)) {
 
-						if (Board.testMode == false) {
+						if (game.getMode() != Mode.TEST) {
 							if (clickedTile.isPiece()) {
 
 								// set capturedPiece position to off the board
