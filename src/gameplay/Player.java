@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import gui.Board;
+import gui.Tile;
 import pieces.Alliance;
 import pieces.Bishop;
 import pieces.King;
@@ -23,17 +24,24 @@ public class Player {
 	private int rowIndex;
 
 	private Random randomGenerator = new Random();
-	private int rand;
+	private int randPieces;
+	private int randMove;
 
 	private King myKing;
+
+	private Game game;
+
+	private boolean isComputer;
 
 	public King getMyKing() {
 		return myKing;
 	}
 
 	// constructor for normal chess
-	public Player(Board board, Alliance all) {
+	public Player(Game game, Board board, Alliance all, boolean isComp) {
+		this.game = game;
 		this.alliance = all;
+		this.isComputer = isComp;
 
 		if (alliance == Alliance.WHITE) {
 			rowIndex = 7;
@@ -62,8 +70,11 @@ public class Player {
 	}
 
 	// this is the constructor for crazy chess (both teams random)
-	public Player(Board board, Alliance all, int boardSize) {
+	public Player(Game game, Board board, Alliance all, int boardSize, boolean isComp) {
+		this.game = game;
+
 		this.alliance = all;
+		this.isComputer = isComp;
 
 		if (alliance == Alliance.WHITE) {
 			rowIndex = boardSize - 1;
@@ -80,14 +91,14 @@ public class Player {
 		// adds rooks, knights, bishops
 		for (int i = 0; i < boardSize; i++) {
 			if (i != boardSize / 2 && i != boardSize / 2 - 1) {
-				rand = randomGenerator.nextInt(3);
-				if (rand == 0) {
+				randPieces = randomGenerator.nextInt(3);
+				if (randPieces == 0) {
 					pieces.add(new Rook(alliance, board, rowIndex, i));
 				}
-				if (rand == 1) {
+				if (randPieces == 1) {
 					pieces.add(new Bishop(alliance, board, rowIndex, i));
 				}
-				if (rand == 2) {
+				if (randPieces == 2) {
 					pieces.add(new Knight(alliance, board, rowIndex, i));
 				}
 			}
@@ -102,7 +113,10 @@ public class Player {
 
 	// this is the constructor for crazy chess (both teams same pieces)
 	// ONLY TO GENERATE BLACK PIECES!
-	public Player(ArrayList<Piece> whitePlayerPieces, Board board) {
+	public Player(Game game, ArrayList<Piece> whitePlayerPieces, Board board, boolean isComp) {
+		this.game = game;
+
+		this.isComputer = isComp;
 		this.alliance = Alliance.BLACK;
 		for (Piece piece : whitePlayerPieces) {
 			if (piece instanceof Pawn) {
@@ -134,6 +148,42 @@ public class Player {
 
 	public void setPieces(ArrayList<Piece> pieces) {
 		this.pieces = pieces;
+	}
+
+	public Alliance getAlliance() {
+		// TODO Auto-generated method stub
+		return this.alliance;
+	}
+
+	public boolean isComputer() {
+		// TODO Auto-generated method stub
+		return isComputer;
+	}
+
+	public void computerMove() {
+		if (isComputer == true) {
+			while (true) {
+				randMove = randomGenerator.nextInt(pieces.size());
+				if (!pieces.get(randMove).calculateLegalMoves().isEmpty()
+						&& pieces.get(randMove).getRow() != Board.BOARD_SIZE + 1) {
+					Piece piece = pieces.get(randMove);
+					// click on the piece
+					game.getBoard().getChessboard()[piece.getRow()][piece.getCol()].doClick();
+					ArrayList<Tile> moves = piece.calculateLegalMoves();
+					randMove = randomGenerator.nextInt(moves.size());
+					try {
+						Thread.sleep(300);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					game.getBoard().getChessboard()[moves.get(randMove).getRow()][moves.get(randMove).getCol()]
+							.doClick();
+					break;
+				}
+			}
+		}
+
 	}
 
 }

@@ -4,7 +4,9 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import gameplay.Game;
@@ -21,13 +23,19 @@ public class Board extends JPanel implements ActionListener {
 	private Game game;
 	private Gui gui;
 
+	private JButton invisibleWhiteButton;
+	private JButton invisibleBlackButton;
+
+	private boolean aiRunning = false;
+
+	private Random randomGenerator = new Random();
+	private int rand;
+
 	public void setGui(Gui gui) {
 		this.gui = gui;
 	}
 
 	private boolean isTileSelected = false;
-
-	// eg. we can add individual pieces to the board in testMode
 
 	private Tile selectedTile;
 	private Tile clickedTile;
@@ -105,7 +113,7 @@ public class Board extends JPanel implements ActionListener {
 				if (!isTileSelected) {
 					// if theres a tile there with non-empty possible moves
 					if (clickedTile.isPiece() && !clickedTile.getPiece().calculateLegalMoves().isEmpty()) {
-						// if we are in text mode OR it is that pieces turn to play
+						// if we are in test mode OR it is that pieces turn to play
 						if (game.getMode() == Mode.TEST || clickedTile.getPiece().getAlliance() == Game.turn) {
 
 							// selects the tile and displays possible moves
@@ -118,7 +126,6 @@ public class Board extends JPanel implements ActionListener {
 					}
 					// otherwise nothing happens
 				} else {
-
 					// i.e. repaint the possibleMoves tiles
 					repaintBoard();
 
@@ -126,7 +133,7 @@ public class Board extends JPanel implements ActionListener {
 
 						if (game.getMode() != Mode.TEST) {
 							if (clickedTile.isPiece()) {
-
+								System.out.println("piece captured");
 								// set capturedPiece position to off the board
 								clickedTile.getPiece().setRow(BOARD_SIZE + 1);
 								clickedTile.getPiece().setCol(BOARD_SIZE + 1);
@@ -168,10 +175,8 @@ public class Board extends JPanel implements ActionListener {
 
 						Game.changeTurn();
 
+						isTileSelected = false;
 					}
-
-					isTileSelected = false;
-
 					e.setSource(null);
 
 					// this includes checking for checkmate (via isCheckMate() in Game)
@@ -180,6 +185,21 @@ public class Board extends JPanel implements ActionListener {
 				}
 			}
 
+			if (!aiRunning) {
+				aiRunning = true;
+				if (Game.turn == game.getWhitePlayer().getAlliance()) {
+					// AI move
+					if (game.getWhitePlayer().isComputer()) {
+						game.getWhitePlayer().computerMove();
+
+					}
+				} else if (game.getBlackPlayer().isComputer()) {
+					game.getBlackPlayer().computerMove();
+
+				}
+
+				aiRunning = false;
+			}
 		}
 	}
 

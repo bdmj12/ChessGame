@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
-
 import gui.Board;
 import gui.Gui;
 import pieces.Alliance;
@@ -35,7 +33,7 @@ public class Game implements ActionListener {
 
 	public int numOfMoves;
 
-	public Game(Gui gui, Mode mode, int boardSize) {
+	public Game(Gui gui, Mode mode, int boardSize, boolean isWhiteComp, boolean isBlackComp) {
 
 		Game.mode = mode;
 
@@ -52,19 +50,19 @@ public class Game implements ActionListener {
 
 		if (mode == Mode.NORMAL) {
 
-			whitePlayer = new Player(board, Alliance.WHITE);
-			blackPlayer = new Player(board, Alliance.BLACK);
+			whitePlayer = new Player(this, board, Alliance.WHITE, isWhiteComp);
+			blackPlayer = new Player(this, board, Alliance.BLACK, isBlackComp);
 		}
 
 		else if (mode == Mode.CRAZY_SAME) {
-			whitePlayer = new Player(board, Alliance.WHITE, boardSize);
-			blackPlayer = new Player(whitePlayer.getPieces(), board);
+			whitePlayer = new Player(this, board, Alliance.WHITE, boardSize, isWhiteComp);
+			blackPlayer = new Player(this, whitePlayer.getPieces(), board, isBlackComp);
 
 		}
 
 		else if (mode == Mode.CRAZY) {
-			whitePlayer = new Player(board, Alliance.WHITE, boardSize);
-			blackPlayer = new Player(board, Alliance.BLACK, boardSize);
+			whitePlayer = new Player(this, board, Alliance.WHITE, boardSize, isWhiteComp);
+			blackPlayer = new Player(this, board, Alliance.BLACK, boardSize, isBlackComp);
 		}
 
 		turn = Alliance.WHITE;
@@ -89,6 +87,9 @@ public class Game implements ActionListener {
 		allPieces = (ArrayList<Piece>) whitePlayer.getPieces().clone();
 		allPieces.addAll(blackPlayer.getPieces());
 
+		if (whitePlayer.isComputer()) {
+			whitePlayer.computerMove();
+		}
 	}
 
 	public ArrayList<Piece> getAllPieces() {
@@ -151,7 +152,7 @@ public class Game implements ActionListener {
 		}
 	}
 
-	public JPanel getBoard() {
+	public Board getBoard() {
 		return board;
 	}
 

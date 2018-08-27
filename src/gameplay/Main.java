@@ -11,7 +11,7 @@ public class Main {
 
 		Gui gui = new Gui(board);
 
-		Game game = new Game(gui, Mode.NORMAL, 8);
+		Game game = new Game(gui, Mode.NORMAL, 8, false, false);
 
 		gui.newGame.doClick();
 

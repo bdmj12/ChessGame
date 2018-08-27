@@ -152,24 +152,27 @@ public abstract class Piece {
 
 			// for every enemy piece
 			for (Piece enemyPiece : enemyPlayer.getPieces()) {
+
 				// if they could take the King
-				if (enemyPiece.calculateLegalMoves().contains(
-						board.getChessboard()[myPlayer.getMyKing().getRow()][myPlayer.getMyKing().getCol()])) {
+				if (enemyPiece.getRow() != board.BOARD_SIZE + 1) {
+					if (enemyPiece.calculateLegalMoves().contains(
+							board.getChessboard()[myPlayer.getMyKing().getRow()][myPlayer.getMyKing().getCol()])) {
 
-					// change the piece back
-					this.row = currentRow;
-					this.col = currentCol;
-					getBoard().getChessboard()[this.row][this.col].setPiece(this);
-					getBoard().getChessboard()[proposedRow][proposedCol].clearPiece();
-					if (piece != null) {
-						getBoard().getChessboard()[proposedRow][proposedCol].setPiece(piece);
-						piece.setRow(proposedRow);
-						piece.setCol(proposedRow);
+						// change the piece back
+						this.row = currentRow;
+						this.col = currentCol;
+						getBoard().getChessboard()[this.row][this.col].setPiece(this);
+						getBoard().getChessboard()[proposedRow][proposedCol].clearPiece();
+						if (piece != null) {
+							getBoard().getChessboard()[proposedRow][proposedCol].setPiece(piece);
+							piece.setRow(proposedRow);
+							piece.setCol(proposedRow);
+						}
+						isKingInCheckRunning = false;
+
+						return true;
+
 					}
-					isKingInCheckRunning = false;
-
-					return true;
-
 				}
 
 			}

@@ -29,30 +29,40 @@ public class Gui implements ActionListener {
 	private JPanel lowerPanel;
 	private static JLabel turnLabel;
 	private static JLabel checkLabel;
-	private JPanel dialogSubPanel1;
-	private JLabel comboLabel1;
-	private JLabel comboLabel2;
-
-	private JCheckBox tickBox;
-
-	private JPanel dialogSubPanel2;
-
-	private JButton okButton;
-	private JComboBox<Integer> comboBox;
 
 	public JButton aboutButton;
 	private JDialog aboutDialog;
 	private JLabel aboutLabel;
 
-	private JPanel dialogPanel;
+	private JDialog newGameDialog;
+	private JPanel newGamePanel;
+	private JPanel player1Panel;
+	private JPanel player2Panel;
+
+	private JPanel normalCrazyPanel;
+	private JPanel boardSizePanel;
+	private JPanel checkboxPanel;
+
+	private JCheckBox checkBox;
+	private JLabel sizeLabel;
+	private JLabel samePiecesLabel;
+	private JLabel player1;
+	private JLabel player2;
+
+	private JComboBox<String> player1Combo;
+	private JComboBox<String> player2Combo;
+
+	private JButton okButton;
+	private JComboBox<Integer> sizeComboBox;
+
 	private int size;
+	private boolean isWhiteComp;
+	private boolean isBlackComp;
 
 	private JRadioButton normalChess;
 	private JRadioButton crazyChess;
 	private ButtonGroup buttonGroup;
 	private int[] crazyOptions = { 4, 6, 8, 10, 12, 14, 16 };
-
-	private JDialog dialog;
 
 	private Board board; // extends JPanel!
 
@@ -74,13 +84,11 @@ public class Gui implements ActionListener {
 	public final static int HEIGHT = 675;
 
 	public Gui(Board board) {
-		// creates the window
-
+		// creates the frame
 		this.board = board;
 		mainFrame = new JFrame();
 
-		aboutButton = new JButton("About");
-		aboutButton.addActionListener(this);
+		// about dialog
 
 		aboutDialog = new JDialog();
 		aboutLabel = new JLabel();
@@ -88,38 +96,76 @@ public class Gui implements ActionListener {
 		aboutDialog.add(aboutLabel);
 		aboutDialog.setResizable(false);
 
-		// creates the dialog window
+		aboutButton = new JButton("About");
+		aboutButton.addActionListener(this);
+
+		// creates the newGame dialog panel
+
+		player1 = new JLabel("Player 1:   ");
+		player2 = new JLabel("Player 2:   ");
+
+		player1Combo = new JComboBox<String>();
+		player1Combo.addItem("Human");
+		player1Combo.addItem("Computer");
+		player1Combo.setSelectedIndex(0);
+
+		player2Combo = new JComboBox<String>();
+		player2Combo.addItem("Human");
+		player2Combo.addItem("Computer");
+		player2Combo.setSelectedIndex(0);
+
+		player1Panel = new JPanel();
+		player2Panel = new JPanel();
+
+		player1Panel.setLayout(new BoxLayout(player1Panel, BoxLayout.X_AXIS));
+		player2Panel.setLayout(new BoxLayout(player2Panel, BoxLayout.X_AXIS));
+
+		player1Panel.add(player1);
+		player1Panel.add(Box.createRigidArea(new Dimension(49, 0)));
+		player1Panel.add(player1Combo);
+
+		player2Panel.add(player2);
+		player2Panel.add(Box.createRigidArea(new Dimension(49, 0)));
+		player2Panel.add(player2Combo);
+
 		normalChess = new JRadioButton("Normal");
 		crazyChess = new JRadioButton("Crazy!  ");
 		buttonGroup = new ButtonGroup();
 		normalChess.setSelected(true);
 
-		comboBox = new JComboBox<Integer>();
+		normalCrazyPanel = new JPanel();
+		normalCrazyPanel.setLayout(new BoxLayout(normalCrazyPanel, BoxLayout.X_AXIS));
+
+		normalCrazyPanel.add(normalChess);
+		normalCrazyPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+		normalCrazyPanel.add(crazyChess);
+
+		boardSizePanel = new JPanel();
+		boardSizePanel.setLayout(new BoxLayout(boardSizePanel, BoxLayout.X_AXIS));
+
+		sizeComboBox = new JComboBox<Integer>();
 		for (int i = 0; i < (crazyOptions.length); i++) {
-			comboBox.addItem(crazyOptions[i]);
+			sizeComboBox.addItem(crazyOptions[i]);
 		}
-		comboBox.setSelectedIndex(3);
-		comboBox.setEnabled(false);
+		sizeComboBox.setSelectedIndex(3);
+		sizeComboBox.setEnabled(false);
 
-		dialogSubPanel1 = new JPanel();
-		dialogSubPanel1.setLayout(new BoxLayout(dialogSubPanel1, BoxLayout.X_AXIS));
-		comboLabel1 = new JLabel("Size of board:");
+		sizeLabel = new JLabel("Size of board:");
 
-		dialogSubPanel2 = new JPanel();
-		dialogSubPanel2.setLayout(new BoxLayout(dialogSubPanel2, BoxLayout.X_AXIS));
-		comboLabel2 = new JLabel("Players have same pieces:");
+		boardSizePanel.add(sizeLabel);
+		boardSizePanel.add(Box.createRigidArea(new Dimension(30, 0)));
+		boardSizePanel.add(sizeComboBox);
 
-		tickBox = new JCheckBox();
-		tickBox.setSelected(false);
-		tickBox.setEnabled(false);
+		checkboxPanel = new JPanel();
 
-		dialogSubPanel2.add(comboLabel2);
-		dialogSubPanel2.add(Box.createRigidArea(new Dimension(10, 0)));
-		dialogSubPanel2.add(tickBox);
+		samePiecesLabel = new JLabel("Players have same pieces:");
 
-		dialogSubPanel1.add(comboLabel1);
-		dialogSubPanel1.add(Box.createRigidArea(new Dimension(30, 0)));
-		dialogSubPanel1.add(comboBox);
+		checkBox = new JCheckBox();
+		checkBox.setSelected(false);
+		checkBox.setEnabled(false);
+
+		checkboxPanel.add(samePiecesLabel);
+		checkboxPanel.add(checkBox);
 
 		buttonGroup.add(normalChess);
 		buttonGroup.add(crazyChess);
@@ -128,24 +174,19 @@ public class Gui implements ActionListener {
 		crazyChess.addActionListener(this);
 
 		okButton = new JButton("OK");
-
 		okButton.addActionListener(this);
+		okButton.setAlignmentX(newGameDialog.CENTER_ALIGNMENT);
 
-		dialogPanel = new JPanel();
-		dialogPanel.setLayout(new BoxLayout(dialogPanel, BoxLayout.Y_AXIS));
+		newGamePanel = new JPanel();
+		newGamePanel.setLayout(new BoxLayout(newGamePanel, BoxLayout.Y_AXIS));
+		newGamePanel.setPreferredSize(new Dimension(190, 160));
 
-		dialogPanel.add(normalChess);
-		dialogPanel.add(crazyChess);
-		dialogPanel.add(dialogSubPanel1);
-		dialogPanel.add(dialogSubPanel2);
-		dialogPanel.add(okButton);
-
-		dialogPanel.setPreferredSize(new Dimension(180, 120));
-		dialogPanel.setLayout(new BoxLayout(dialogPanel, BoxLayout.Y_AXIS));
-
-		normalChess.setAlignmentX(dialogPanel.CENTER_ALIGNMENT);
-		crazyChess.setAlignmentX(dialogPanel.CENTER_ALIGNMENT);
-		okButton.setAlignmentX(dialogPanel.CENTER_ALIGNMENT);
+		newGamePanel.add(normalCrazyPanel);
+		newGamePanel.add(player1Panel);
+		newGamePanel.add(player2Panel);
+		newGamePanel.add(boardSizePanel);
+		newGamePanel.add(checkboxPanel);
+		newGamePanel.add(okButton);
 
 		board.setGui(this);
 
@@ -242,49 +283,61 @@ public class Gui implements ActionListener {
 
 		else if (e.getSource() == newGame) {
 
-			dialog = new JDialog(mainFrame);
-			dialog.add(dialogPanel);
-			dialog.setTitle("New Game");
-			dialog.setResizable(false);
-			dialog.setModal(true);
-			dialog.pack();
-			dialog.setLocationRelativeTo(mainFrame);
+			newGameDialog = new JDialog(mainFrame);
+			newGameDialog.add(newGamePanel);
+			newGameDialog.setTitle("New Game");
+			newGameDialog.setResizable(false);
+			newGameDialog.setModal(true);
+			newGameDialog.pack();
+			newGameDialog.setLocationRelativeTo(mainFrame);
 
-			dialog.setVisible(true);
+			newGameDialog.setVisible(true);
 
 		} else if (e.getSource() == okButton) {
 			board.clearBoard();
 			mainFrame.remove(board);
 			board = null;
 
+			if (player1Combo.getSelectedIndex() == 0) {
+				isWhiteComp = false;
+			} else {
+				isWhiteComp = true;
+			}
+
+			if (player2Combo.getSelectedIndex() == 0) {
+				isBlackComp = false;
+			} else {
+				isBlackComp = true;
+			}
+
 			if (normalChess.isSelected()) {
 				board = new Board(8);
 				board.setGui(this);
 				mainFrame.getContentPane().add(BorderLayout.CENTER, board);
 
-				game = new Game(this, Mode.NORMAL, 8);
-				dialog.dispose();
+				game = new Game(this, Mode.NORMAL, 8, isWhiteComp, isBlackComp);
+				newGameDialog.dispose();
 			} else {
-				size = (int) comboBox.getSelectedItem();
+				size = (int) sizeComboBox.getSelectedItem();
 				board = new Board(size);
 				board.setGui(this);
 				mainFrame.getContentPane().add(BorderLayout.CENTER, board);
 
-				if (tickBox.isSelected()) {
-					game = new Game(this, Mode.CRAZY_SAME, size);
+				if (checkBox.isSelected()) {
+					game = new Game(this, Mode.CRAZY_SAME, size, isWhiteComp, isBlackComp);
 				} else {
-					game = new Game(this, Mode.CRAZY, size);
+					game = new Game(this, Mode.CRAZY, size, isWhiteComp, isBlackComp);
 				}
-				dialog.dispose();
+				newGameDialog.dispose();
 			}
 		} else {
 			if (normalChess.isSelected()) {
-				comboBox.setEnabled(false);
-				tickBox.setEnabled(false);
+				sizeComboBox.setEnabled(false);
+				checkBox.setEnabled(false);
 				;
 			} else {
-				comboBox.setEnabled(true);
-				tickBox.setEnabled(true);
+				sizeComboBox.setEnabled(true);
+				checkBox.setEnabled(true);
 
 			}
 		}

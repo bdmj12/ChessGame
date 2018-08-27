@@ -14,18 +14,18 @@ public class Rook extends Piece {
 	@Override
 	public ArrayList<Tile> calculateLegalMoves() {
 		moves = new ArrayList<>();
+		if (row != board.BOARD_SIZE + 1) {
+			for (int i : new int[] { 1, -1 }) {
 
-		for (int i : new int[] { 1, -1 }) {
+				// rows
+				rookMoves(i, 0);
 
-			// rows
-			rookMoves(i, 0);
+				// columns
 
-			// columns
+				rookMoves(0, i);
 
-			rookMoves(0, i);
-
+			}
 		}
-
 		return moves;
 	}
 
