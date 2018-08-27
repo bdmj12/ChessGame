@@ -9,6 +9,9 @@ import javax.swing.JPanel;
 
 import gameplay.Game;
 import gameplay.Mode;
+import pieces.Alliance;
+import pieces.Pawn;
+import pieces.Queen;
 
 public class Board extends JPanel implements ActionListener {
 
@@ -136,10 +139,30 @@ public class Board extends JPanel implements ActionListener {
 						clickedTile.setPiece(selectedTile.getPiece());
 						clickedTile.getPiece().setRow(clickedTile.getRow());
 						clickedTile.getPiece().setCol(clickedTile.getCol());
-						game.updatePositions();
 
 						// clears the old tile
 						selectedTile.clearPiece();
+
+						// check for promotion
+						if (clickedTile.getPiece() instanceof Pawn) {
+							if (clickedTile.getPiece().getAlliance() == Alliance.WHITE) {
+								if (clickedTile.getPiece().getRow() == 0) {
+									clickedTile.setPiece(new Queen(Alliance.WHITE, this, clickedTile.getRow(),
+											clickedTile.getCol()));
+									game.getWhitePlayer().getPieces().add(clickedTile.getPiece());
+									game.getAllPieces().add(clickedTile.getPiece());
+								}
+							} else {
+								if (clickedTile.getPiece().getRow() == 1) {
+									clickedTile.setPiece(new Queen(Alliance.BLACK, this, clickedTile.getRow(),
+											clickedTile.getCol()));
+									game.getBlackPlayer().getPieces().add(clickedTile.getPiece());
+									game.getAllPieces().add(clickedTile.getPiece());
+								}
+							}
+
+						}
+						game.updatePositions();
 
 						game.numOfMoves++;
 

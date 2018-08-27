@@ -37,7 +37,7 @@ public class Game implements ActionListener {
 
 	public Game(Gui gui, Mode mode, int boardSize) {
 
-		this.mode = mode;
+		Game.mode = mode;
 
 		numOfMoves = 0;
 
@@ -56,7 +56,13 @@ public class Game implements ActionListener {
 			blackPlayer = new Player(board, Alliance.BLACK);
 		}
 
-		else {
+		else if (mode == Mode.CRAZY_SAME) {
+			whitePlayer = new Player(board, Alliance.WHITE, boardSize);
+			blackPlayer = new Player(whitePlayer.getPieces(), board);
+
+		}
+
+		else if (mode == Mode.CRAZY) {
 			whitePlayer = new Player(board, Alliance.WHITE, boardSize);
 			blackPlayer = new Player(board, Alliance.BLACK, boardSize);
 		}
@@ -85,6 +91,10 @@ public class Game implements ActionListener {
 
 	}
 
+	public ArrayList<Piece> getAllPieces() {
+		return allPieces;
+	}
+
 	public Player getWhitePlayer() {
 		return whitePlayer;
 	}
@@ -105,17 +115,22 @@ public class Game implements ActionListener {
 		if (mode != Mode.TEST) {
 			if (turn == Alliance.WHITE) {
 				for (Piece piece : whitePlayer.getPieces()) {
-					if (!piece.calculateLegalMoves().isEmpty()) {
+					if (piece.getRow() != board.BOARD_SIZE + 1) {
+						if (!piece.calculateLegalMoves().isEmpty()) {
 
-						return false;
+							return false;
+						}
 					}
 				}
 				isGameOver = true;
 				return true;
+
 			} else {
 				for (Piece piece : blackPlayer.getPieces()) {
-					if (!piece.calculateLegalMoves().isEmpty()) {
-						return false;
+					if (piece.getRow() != board.BOARD_SIZE + 1) {
+						if (!piece.calculateLegalMoves().isEmpty()) {
+							return false;
+						}
 					}
 				}
 

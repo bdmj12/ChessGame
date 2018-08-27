@@ -189,12 +189,14 @@ public abstract class Piece {
 	}
 
 	public void addMove(int x, int y) {
-		if (!isKingInCheckRunning) {
-			if (!isKingInCheck(x, y)) {
+		if (withinRange(x, y)) {
+			if (!isKingInCheckRunning) {
+				if (!isKingInCheck(x, y)) {
+					moves.add(getTileAt(x, y));
+				}
+			} else {
 				moves.add(getTileAt(x, y));
 			}
-		} else {
-			moves.add(getTileAt(x, y));
 		}
 	}
 

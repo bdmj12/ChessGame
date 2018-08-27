@@ -61,7 +61,7 @@ public class Player {
 
 	}
 
-	// this is the constructor for crazy chess
+	// this is the constructor for crazy chess (both teams random)
 	public Player(Board board, Alliance all, int boardSize) {
 		this.alliance = all;
 
@@ -97,6 +97,35 @@ public class Player {
 		for (int i = 0; i < boardSize; i++) {
 			pieces.add(new Pawn(alliance, board, (int) ((boardSize - 3) / ((float) boardSize - 1) * rowIndex + 1), i));
 		}
+
+	}
+
+	// this is the constructor for crazy chess (both teams same pieces)
+	// ONLY TO GENERATE BLACK PIECES!
+	public Player(ArrayList<Piece> whitePlayerPieces, Board board) {
+		this.alliance = Alliance.BLACK;
+		for (Piece piece : whitePlayerPieces) {
+			if (piece instanceof Pawn) {
+				this.pieces.add(new Pawn(alliance, board, (Board.BOARD_SIZE - 1 - piece.getRow()), piece.getCol()));
+			}
+			if (piece instanceof Rook) {
+				this.pieces.add(new Rook(alliance, board, (Board.BOARD_SIZE - 1 - piece.getRow()), piece.getCol()));
+			}
+			if (piece instanceof Bishop) {
+				this.pieces.add(new Bishop(alliance, board, (Board.BOARD_SIZE - 1 - piece.getRow()), piece.getCol()));
+			}
+			if (piece instanceof Knight) {
+				this.pieces.add(new Knight(alliance, board, (Board.BOARD_SIZE - 1 - piece.getRow()), piece.getCol()));
+			}
+			if (piece instanceof Queen) {
+				this.pieces.add(new Queen(alliance, board, (Board.BOARD_SIZE - 1 - piece.getRow()), piece.getCol()));
+			}
+			if (piece instanceof King) {
+				myKing = new King(alliance, board, (Board.BOARD_SIZE - 1 - piece.getRow()), piece.getCol());
+				this.pieces.add(myKing);
+			}
+		}
+
 	}
 
 	public ArrayList<Piece> getPieces() {
