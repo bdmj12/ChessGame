@@ -31,21 +31,22 @@ public class Game implements ActionListener {
 
 	private Board board;
 
-	public int numOfMoves;
+	public int numOfMoves; // keeps track of the number of moves (in order to undo)
+
+	// Game constructor takes a gui, game mode, size of board and if players are
+	// computers or humans
 
 	public Game(Gui gui, Mode mode, int boardSize, boolean isWhiteComp, boolean isBlackComp) {
 
 		Game.mode = mode;
-
 		numOfMoves = 0;
-
 		isGameOver = false;
 
 		gui.setGame(this);
 		this.gui = gui;
 
+		// gets board from gui
 		board = gui.getBoard();
-
 		board.setGame(this);
 
 		if (mode == Mode.NORMAL) {
@@ -56,6 +57,8 @@ public class Game implements ActionListener {
 
 		else if (mode == Mode.CRAZY_SAME) {
 			whitePlayer = new Player(this, board, Alliance.WHITE, boardSize, isWhiteComp);
+
+			// black pieces 'reflect' the white pieces
 			blackPlayer = new Player(this, whitePlayer.getPieces(), board, isBlackComp);
 
 		}
@@ -68,7 +71,6 @@ public class Game implements ActionListener {
 		turn = Alliance.WHITE;
 
 		// adds the pieces to the board
-
 		for (Piece piece : whitePlayer.getPieces()) {
 			piece.setMyPlayer(whitePlayer);
 			piece.setEnemyPlayer(blackPlayer);
@@ -84,9 +86,11 @@ public class Game implements ActionListener {
 		// update labels without checking for check and checkmate
 		gui.updateLabels(false);
 
+		// creates a copy of all pieces
 		allPieces = (ArrayList<Piece>) whitePlayer.getPieces().clone();
 		allPieces.addAll(blackPlayer.getPieces());
 
+		// if white is a computer, do first move
 		if (whitePlayer.isComputer()) {
 			whitePlayer.computerMove();
 		}
@@ -116,19 +120,21 @@ public class Game implements ActionListener {
 		if (mode != Mode.TEST) {
 			if (turn == Alliance.WHITE) {
 				for (Piece piece : whitePlayer.getPieces()) {
-					if (piece.getRow() != board.BOARD_SIZE + 1) {
+					// if piece is not off the board (i.e. captured)
+					if (piece.getRow() != Board.BOARD_SIZE + 1) {
 						if (!piece.calculateLegalMoves().isEmpty()) {
 
 							return false;
 						}
 					}
 				}
+				// if no valid moves:
 				isGameOver = true;
 				return true;
 
 			} else {
 				for (Piece piece : blackPlayer.getPieces()) {
-					if (piece.getRow() != board.BOARD_SIZE + 1) {
+					if (piece.getRow() != Board.BOARD_SIZE + 1) {
 						if (!piece.calculateLegalMoves().isEmpty()) {
 							return false;
 						}
@@ -161,7 +167,7 @@ public class Game implements ActionListener {
 		if (mode != Mode.TEST) {
 			if (turn == Alliance.WHITE) {
 				for (Piece piece : blackPlayer.getPieces()) {
-					if (piece.getRow() != board.BOARD_SIZE + 1) {
+					if (piece.getRow() != Board.BOARD_SIZE + 1) {
 						if (piece.calculateLegalMoves()
 								.contains(board.getChessboard()[whitePlayer.getMyKing().getRow()][whitePlayer
 										.getMyKing().getCol()])) {
@@ -172,7 +178,7 @@ public class Game implements ActionListener {
 				return false;
 			} else {
 				for (Piece piece : whitePlayer.getPieces()) {
-					if (piece.getRow() != board.BOARD_SIZE + 1) {
+					if (piece.getRow() != Board.BOARD_SIZE + 1) {
 						if (piece.calculateLegalMoves()
 								.contains(board.getChessboard()[blackPlayer.getMyKing().getRow()][blackPlayer
 										.getMyKing().getCol()])) {
@@ -183,7 +189,7 @@ public class Game implements ActionListener {
 				return false;
 			}
 		}
-		return false;
+		return false; // i.e. if in test mode
 	}
 
 	public void updatePositions() {
@@ -195,6 +201,9 @@ public class Game implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+
+		/// UNDO METHOD
+
 		if (numOfMoves != 0) {
 
 			board.clearBoard();
@@ -203,7 +212,7 @@ public class Game implements ActionListener {
 
 				newRow = piece.getPreviousPositions().get(numOfMoves - 1).getRow();
 				newCol = piece.getPreviousPositions().get(numOfMoves - 1).getCol();
-				if (newRow != board.BOARD_SIZE + 1) {
+				if (newRow != Board.BOARD_SIZE + 1) {
 					board.getChessboard()[newRow][newCol].setPiece(piece);
 					piece.setRow(newRow);
 					piece.setCol(newCol);
